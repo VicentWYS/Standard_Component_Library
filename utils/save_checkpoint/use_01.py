@@ -1,22 +1,33 @@
 import torch
-import os
 import matplotlib.pyplot as plt
-from utils.get_data import generate_random_seed
+import os
 from generator import Generator
+from discriminator import Discriminator
+from dataset import MnistDataset
+from utils.get_data import generate_random_seed
+from utils.save_checkpoints import save_checkpoint
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-# ---------------------- 可视化G生成效果 ----------------------
+D = Discriminator()
 G = Generator()
-checkpoint = torch.load("./save/checkpoint/G_train_mnist_improved.pth")  # 加载检查点
-G.load_state_dict(checkpoint["model_state_dict"])  # 模型加载参数
 
-f, ax = plt.subplots(2, 3, figsize=(16, 8))  # f是整个图形窗口的对象,ax是一个2x3的NumPy数组，其中包含6个子图对象
-for i in range(2):
-    for j in range(3):
-        g_out = G.forward(generate_random_seed(100))
-        image = g_out.detach().numpy().reshape(28, 28)
-        ax[i][j].imshow(image, interpolation='none', cmap='Blues')
-plt.savefig("./save/image/G_trained_product_improved.png", dpi=1000)
-plt.show()
-plt.close()
+train_data = MnistDataset()
+
+epochs = 4
+
+for epoch in range(epochs):
+    print('epoch = ', epoch + 1)
+    for label, image, target in train_data:
+        # 用真实数据训练D
+        D.train_D(image, torch.FloatTensor([1.0]))
+
+        # G中输入符合正态分布的随机数
+        D.train_D(G.forward(generate_random_seed(100)).detach(), torch.FloatTensor([0.0]))
+
+        # G中输入符合正态分布的随机数
+        G.train_G(D, generate_random_seed(100), torch.FloatTensor([1.0]))
+
+# 保存训练模型
+save_checkpoint(D, './save/checkpoint/D_train_mnist_improved.pth')
+save_checkpoint(G, './save/checkpoint/G_train_mnist_improved.pth')

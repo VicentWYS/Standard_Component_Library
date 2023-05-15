@@ -1,0 +1,20 @@
+"""
+训练日志：
+将训练结果写入本地txt文件
+"""
+
+# 写入准确率列表
+with open("acc.txt", "w") as f:
+    acc = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for i in range(len(acc)):
+        f.write("Acc= {:.4f}".format(acc[i])) # 每次写入时必须是str类型
+        f.write('\n')
+        f.flush()
+
+
+# 写入单个值
+best_acc = 0.99
+f3 = open("best_acc.txt", "w")
+f3.write("best_acc = {:.2f}".format(best_acc) + '\n')
+f3.close()
+
