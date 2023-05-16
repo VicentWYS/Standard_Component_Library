@@ -15,7 +15,9 @@ def plot_d_train_loss(self):
     y = self.train_loss_list
 
     plt.figure()
-    plt.plot(x, y, linewidth=0.2) # 纯折线图，蓝色
+    # 纯折线图，蓝色
+    plt.plot(x, y, linewidth=0.2)
+    # 点图，带折线
     # plt.plot(x, y, marker=".", markersize=3.0, alpha=0.5, linewidth=0.1, linestyle='dashed')
     plt.title("D train loss")
     plt.xlabel("epoch")
